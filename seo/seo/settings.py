@@ -52,15 +52,12 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-# #    'seo.middlewares.MyCustomDownloaderMiddleware': 543,
-# 	'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-#     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-#     'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
-#     'seo.randomuseragent.RandomUserAgentMiddleware': 400
-# }
-
-PROXY_LIST = 'proxy.txt'
+DOWNLOADER_MIDDLEWARES = {
+#	'seo.middlewares.MyCustomDownloaderMiddleware': 543,
+#	'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    'scrapy.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'seo.randomuseragent.RandomUserAgentMiddleware': 400
+}
 
 DOWNLOAD_TIMEOUT = 300
 
@@ -68,11 +65,6 @@ MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
 MYSQL_PASSWD = '123abc'
 MYSQL_DBNAME = 'seo-tools'
-
-# MYSQL_HOST = '10.10.10.10'
-# MYSQL_USER = 'roswell'
-# MYSQL_PASSWD = 'roswellsecret'
-# MYSQL_DBNAME = 'roswelldb2'
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

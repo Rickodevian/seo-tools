@@ -71,14 +71,14 @@ class BacklinkCheckerPipeline(object):
 	def process_item(self, item, spider):
 		db = self.make_connection_MySQL()
 		cursor = db.cursor() 
-		sql = "SELECT id FROM `BacklinksUrbanindo` WHERE backlinkId = %i AND urbanindoUrlHref = '%s' " \
-		% (item['backlinkUrlId'], item['urbanindoUrlHref'])
+		sql = "SELECT id FROM `BacklinksUrbanindo` WHERE backlinkId = %i AND anchorHref = '%s' " \
+		% (item['backlinkUrlId'], item['anchorHref'])
 		cursor.execute(sql)
 		urlExist = cursor.fetchone()
 
 		if urlExist is None:
-			sql = "INSERT IGNORE INTO BacklinksUrbanindo(backlinkId, urbanindoUrlHref, urbanindoUrlText) VALUES(%i, '%s', '%s')" \
-			% (item['backlinkUrlId'], item['urbanindoUrlHref'], item['urbanindoUrlText'])
+			sql = "INSERT IGNORE INTO BacklinksUrbanindo(backlinkId, anchorHref, anchorText) VALUES(%i, '%s', '%s')" \
+			% (item['backlinkUrlId'], item['anchorHref'], item['anchorText'])
 			cursor.execute(sql)
 			db.commit()
 		db.close()

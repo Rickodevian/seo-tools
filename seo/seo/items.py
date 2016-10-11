@@ -23,6 +23,6 @@ class ReportItem(scrapy.Item):
 class BackLinkItem(scrapy.Item):
 	backlinkUrlId = scrapy.Field()
 	backlinkUrl = scrapy.Field()
-	urbanindoUrlHref = scrapy.Field()
-	urbanindoUrlText = scrapy.Field()
+	anchorHref = scrapy.Field()
+	anchorText = scrapy.Field()
 	pass

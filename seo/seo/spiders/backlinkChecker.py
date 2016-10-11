@@ -45,9 +45,10 @@ class BacklinkcheckerSpider(scrapy.Spider):
 				anchorHref = Selector(text=str(innerAnchors[c])).xpath('//@href').extract();
 				item['backlinkUrlId'] = urlId
 				item['backlinkUrl'] = response.url
-				item['urbanindoUrlHref'] = anchorHref[0]
-				item['urbanindoUrlText'] = anchorText[0]
+				item['anchorHref'] = anchorHref[0]
+				item['anchorText'] = anchorText[0]
 				insertedAnchorHrefs.append(anchorHref[0]);
+				print item
 				yield item
 			pass
 		self.delete_removed_backlink_urls(urlId, insertedAnchorHrefs)
@@ -56,7 +57,7 @@ class BacklinkcheckerSpider(scrapy.Spider):
 	def delete_removed_backlink_urls(self, urlId, anchorHref):
 		db = self.make_connection_MySQL()
 		cursor = db.cursor()
-		sql = "SELECT id, urbanindoUrlHref FROM `BacklinksUrbanindo` WHERE backlinkId = %i " % urlId
+		sql = "SELECT id, anchorHref FROM `BacklinksUrbanindo` WHERE backlinkId = %i " % urlId
 		cursor.execute(sql)
 		anchorHrefOld = cursor.fetchall()
 
@@ -99,7 +100,6 @@ class BacklinkcheckerSpider(scrapy.Spider):
 		active = self.is_url_active(response.status)
 		urlId = sqlResult[0]
 		htmlContent = sqlResult[2]
-		print htmlContent
 
 		if str(response.body) != htmlContent:
 			db = self.make_connection_MySQL()
