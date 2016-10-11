@@ -61,10 +61,10 @@ DOWNLOADER_MIDDLEWARES = {
 
 DOWNLOAD_TIMEOUT = 300
 
-MYSQL_HOST = 'localhost'
-MYSQL_USER = 'root'
-MYSQL_PASSWD = '123abc'
-MYSQL_DBNAME = 'seo-tools'
+MYSQL_HOST = '10.10.10.10'
+MYSQL_USER = 'roswell'
+MYSQL_PASSWD = 'roswellsecret'
+MYSQL_DBNAME = 'roswelldb2'
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

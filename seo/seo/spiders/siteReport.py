@@ -51,7 +51,6 @@ class SitereportSpider(scrapy.Spider):
 			found = True
 		else :
 			print "new account proxy"
-			# TO DO : get new proxy
 			found = self.set_new_account_proxy()
 			if found is False:
 				print "no account available"
@@ -70,7 +69,6 @@ class SitereportSpider(scrapy.Spider):
 				)]
 
 	def parse_requests(self, response):
-		# print response.headers.getlist('Set-Cookie')
 		login = response.xpath('//li[@class="login separator"]/div/a/text()').extract() is None
 		if login == False:
 			print 'not logged in'
@@ -102,8 +100,6 @@ class SitereportSpider(scrapy.Spider):
 		)
 
 	def after_login(self, response):
-		print self.email
-		print self.proxy
 		account = response.xpath('//li[@class="dd-link account-dd separator"]/a/text()').extract() is None
 		if account == False:
 			print "login success" 
@@ -153,36 +149,13 @@ class SitereportSpider(scrapy.Spider):
 			print "logout failed"
 			pass
 
-	def make_connection_MySQL(self):
-		return MySQLdb.connect(
-					self.settings['MYSQL_HOST'],
-					self.settings['MYSQL_USER'],
-					self.settings['MYSQL_PASSWD'],
-					self.settings['MYSQL_DBNAME'],
-				)
-		pass
-
 	def get_accounts(self):
-		db = self.make_connection_MySQL()
-		cursor = db.cursor()
 		sql = "SELECT id, username, password FROM SeoToolAccounts"
-		cursor.execute(sql)
-		result = cursor.fetchall()
-		db.close()
-
-		return result
-		pass
+		return self.get_data_query(sql, True)
 
 	def get_proxies(self):
-		db = self.make_connection_MySQL()
-		cursor = db.cursor()
 		sql = "SELECT id, proxy, username, password FROM Proxies"
-		cursor.execute(sql);
-		result = cursor.fetchall()
-		db.close()
-
-		return result
-		pass
+		return self.get_data_query(sql, True)
 
 	def set_new_account_proxy(self):
 		proxies = self.get_proxies()
@@ -223,34 +196,17 @@ class SitereportSpider(scrapy.Spider):
 		pass
 
 	def get_exist_account_proxy(self, accountId, proxyId):
-		db = self.make_connection_MySQL()
-		cursor = db.cursor()
 		sql = "SELECT id FROM SeoAccountProxies WHERE seoAccountId = %i AND proxyId = %i AND (NOW() > updatedTime + INTERVAL 1 DAY OR lastResponseStatus <> 200)" \
 		% (accountId, proxyId)
-		cursor.execute(sql)
-		result = cursor.fetchone()
-		db.close()
-
-		return result
+		return self.get_data_query(sql, False)
 
 	def get_available_account_proxy(self):
-		db = self.make_connection_MySQL()
-		cursor = db.cursor()
 		sql = "SELECT a.username, a.password, ap.id, p.proxy, p.username, p.password FROM SeoAccountProxies ap JOIN SeoToolAccounts a ON a.id = ap.seoAccountId JOIN Proxies p ON p.id = ap.proxyId WHERE NOW() > ap.updatedTime + INTERVAL 1 DAY OR ap.lastResponseStatus = 200 OR ap.used = 0"
-		cursor.execute(sql)
-		result = cursor.fetchone()
-		db.close()
-
-		return result
-		pass
+		return self.get_data_query(sql, False)
 
 	def update_account_proxy_status(self, status):
-		db = self.make_connection_MySQL()
-		cursor = db.cursor()
 		sql = "UPDATE SeoAccountProxies SET used = used + 1, lastResponseStatus = %i WHERE id = '%i' " % (status, self.requestId)
-		cursor.execute(sql)
-		db.commit()
-		db.close()
+		self.save_data_query(sql)
 		pass
 
 	def errback_get_citation_trustflow(self, failure):
@@ -272,4 +228,32 @@ class SitereportSpider(scrapy.Spider):
 				callback=self.after_login,
 				dont_filter=True
 			)
+		pass
+
+	def get_data_query(self, sql, all):
+		db = self.make_connection_MySQL()
+		cursor = db.cursor()
+		cursor.execute(sql)
+		if all is True:
+			result = cursor.fetchall()
+		else:
+			result = cursor.fetchone()
+			pass
+		db.close()
+		return result
+
+	def save_data_query(self, sql):
+		db = self.make_connection_MySQL()
+		cursor = db.cursor()
+		cursor.execute(sql)
+		db.commit()
+		db.close()
+
+	def make_connection_MySQL(self):
+		return MySQLdb.connect(
+					self.settings['MYSQL_HOST'],
+					self.settings['MYSQL_USER'],
+					self.settings['MYSQL_PASSWD'],
+					self.settings['MYSQL_DBNAME'],
+				)
 		pass
